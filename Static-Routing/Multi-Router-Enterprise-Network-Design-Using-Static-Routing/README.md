@@ -19,7 +19,7 @@ The project demonstrates how static routing can be configured to enable communic
 | Configuration | `configuration.txt` |
 | Screenshot | `topology.png` |
 
-![Network Topology](topology.png)
+topology.png
 
 ---
 
