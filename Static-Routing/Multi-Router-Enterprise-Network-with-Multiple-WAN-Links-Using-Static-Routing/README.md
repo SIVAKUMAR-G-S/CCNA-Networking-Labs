@@ -23,7 +23,7 @@ The project focuses on configuring static routes to establish communication betw
 
 ### Network Topology Diagram
 
-![Network Topology](topology.png)
+![Network Topology](topology.jpeg)
 
 ---
 
