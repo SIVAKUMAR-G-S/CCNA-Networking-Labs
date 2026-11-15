@@ -1,0 +1,108 @@
+FOUR-ROUTER ENTERPRISE NETWORK
+Static Routing Configuration – Cisco Packet Tracer
+Addressing plan: Class A /8 masks (255.0.0.0) throughout
+
+PROJECT TITLE
+Four-Router Enterprise Network Design Using Static Routing | Cisco Packet Tracer
+
+IMPORTANT
+This version matches the addressing plan shown in your topology:
+- Every LAN uses 255.0.0.0 (/8).
+- Every router-to-router link uses 255.0.0.0 (/8).
+Do not use /24 or /30 masks for this particular lab unless you intentionally redesign the addressing.
+
+ADDRESSING PLAN
+
+LANs:
+R1 LAN: 10.0.0.0/8     R1 gateway: 10.0.0.3
+R2 LAN: 20.0.0.0/8     R2 gateway: 20.0.0.3
+R3 LAN: 30.0.0.0/8     R3 gateway: 30.0.0.3
+R4 LAN: 40.0.0.0/8     R4 gateway: 40.0.0.3
+
+WAN links:
+R1-R2: 50.0.0.0/8     R1: 50.0.0.1    R2: 50.0.0.2
+R2-R3: 60.0.0.0/8     R2: 60.0.0.1    R3: 60.0.0.2
+R3-R4: 70.0.0.0/8     R3: 70.0.0.1    R4: 70.0.0.2
+R1-R4: 80.0.0.0/8     R1: 80.0.0.1    R4: 80.0.0.2
+
+PC ADDRESSES (as shown):
+R1 LAN: 10.0.0.1 and 10.0.0.2; gateway 10.0.0.3
+R2 LAN: 20.0.0.1 and 20.0.0.2; gateway 20.0.0.3
+R3 LAN: 30.0.0.1 and 30.0.0.2; gateway 30.0.0.3
+R4 LAN: 40.0.0.1 and 40.0.0.2; gateway 40.0.0.3
+Subnet mask on every PC: 255.0.0.0
+
+
+============================================================
+R1 – STATIC ROUTES
+============================================================
+enable
+configure terminal
+ip route 20.0.0.0 255.0.0.0 50.0.0.2
+ip route 30.0.0.0 255.0.0.0 50.0.0.2
+ip route 40.0.0.0 255.0.0.0 80.0.0.2
+end
+copy running-config startup-config
+
+
+============================================================
+R2 – STATIC ROUTES
+============================================================
+enable
+configure terminal
+ip route 10.0.0.0 255.0.0.0 50.0.0.1
+ip route 30.0.0.0 255.0.0.0 60.0.0.2
+ip route 40.0.0.0 255.0.0.0 60.0.0.2
+end
+copy running-config startup-config
+
+
+============================================================
+R3 – STATIC ROUTES
+============================================================
+enable
+configure terminal
+ip route 10.0.0.0 255.0.0.0 60.0.0.1
+ip route 20.0.0.0 255.0.0.0 60.0.0.1
+ip route 40.0.0.0 255.0.0.0 70.0.0.2
+end
+copy running-config startup-config
+
+
+============================================================
+R4 – STATIC ROUTES
+============================================================
+enable
+configure terminal
+ip route 10.0.0.0 255.0.0.0 80.0.0.1
+ip route 20.0.0.0 255.0.0.0 70.0.0.1
+ip route 30.0.0.0 255.0.0.0 70.0.0.1
+end
+copy running-config startup-config
+
+
+============================================================
+VERIFICATION
+============================================================
+show ip interface brief
+show ip route
+show running-config
+ping <destination-IP>
+traceroute <destination-IP>
+
+Expected remote LAN routes:
+R1: 20.0.0.0/8, 30.0.0.0/8, 40.0.0.0/8
+R2: 10.0.0.0/8, 30.0.0.0/8, 40.0.0.0/8
+R3: 10.0.0.0/8, 20.0.0.0/8, 40.0.0.0/8
+R4: 10.0.0.0/8, 20.0.0.0/8, 30.0.0.0/8
+
+TROUBLESHOOTING
+1. Verify every router interface is up/up.
+2. Verify the interface IP addresses and masks match this plan.
+3. Verify each PC has the correct /8 mask and default gateway.
+4. Verify each next-hop address is reachable from the router.
+5. Remember that successful communication requires a forward route and a return route.
+
+NOTE
+The topology has alternate physical paths, but these commands select one next hop per remote LAN. They do not provide automatic failover. Floating static routes can be added as a separate exercise.
+Interface names are not included because the screenshots do not clearly identify all router port names. Apply the IP addresses to the actual interfaces used by your Packet Tracer cabling.
