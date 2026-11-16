@@ -24,7 +24,7 @@ The project demonstrates the implementation of **RIPv1 (Routing Information Prot
 
 ### Network Topology Diagram
 
-![Network Topology](topology.png)
+![Network Topology](topology.jpeg)
 
 ---
 
