@@ -1,0 +1,267 @@
+RIPv1 CONFIGURATION – MULTI-ROUTER ENTERPRISE TOPOLOGY
+Cisco Packet Tracer | 7 Routers | Classful Default Masks
+
+PROJECT TITLE
+Enterprise Multi-Site Network Design Using RIPv1 | Cisco Packet Tracer
+
+IMPORTANT ADDRESSING NOTES
+This file follows classful default subnet masks:
+- Class A networks (first octet 1–126): 255.0.0.0 (/8)
+- Class C networks (first octet 192–223): 255.255.255.0 (/24)
+
+TOPOLOGY CORRECTION REQUIRED
+The diagram labels the Router3–Router4 WAN link as 30.0.12.1 and
+30.0.12.2. However, Router2's Branch-C LAN is already 30.0.0.0/8.
+With the default Class A /8 mask, both interfaces would belong to
+the same 30.0.0.0/8 network, even though they are on separate links.
+That overlap prevents a correct routed topology.
+
+For this configuration, change the Router3–Router4 WAN link to:
+- Router3 side: 110.0.12.1 255.0.0.0
+- Router4 side: 110.0.12.2 255.0.0.0
+
+Do not configure 30.0.12.1/8 and 30.0.12.2/8 on that WAN link.
+
+============================================================
+1. IP ADDRESSING PLAN
+============================================================
+
+LAN networks
+Router0 – Branch-A LAN:
+  Router0 G0/0: 10.0.0.1 /8
+  PC0:          10.0.0.10 /8, gateway 10.0.0.1
+  PC1:          10.0.0.11 /8, gateway 10.0.0.1
+
+Router1 – Branch-B LAN:
+  Router1 G0/0: 20.0.0.1 /8
+  PC2:          20.0.0.10 /8, gateway 20.0.0.1
+  PC3:          20.0.0.11 /8, gateway 20.0.0.1
+
+Router2 – Branch-C LAN:
+  Router2 G0/0: 30.0.0.1 /8
+  PC4:          30.0.0.10 /8, gateway 30.0.0.1
+  PC5:          30.0.0.11 /8, gateway 30.0.0.1
+
+Router3 – Data Center LAN:
+  Router3 G0/0: 100.0.0.1 /8
+  Server1:      100.0.0.10 /8, gateway 100.0.0.1
+  Server0:      100.0.0.11 /8, gateway 100.0.0.1
+
+Router4 – Branch-D LAN:
+  Router4 G0/0: 192.168.1.1 /24
+  PC9:          192.168.1.10 /24, gateway 192.168.1.1
+  PC8:          192.168.1.11 /24, gateway 192.168.1.1
+
+Router5 – Branch-E LAN:
+  Router5 G0/0: 192.168.2.1 /24
+  PC8:          192.168.2.10 /24, gateway 192.168.2.1
+  PC7:          192.168.2.11 /24, gateway 192.168.2.1
+
+WAN links
+Router0 <-> Router3:
+  Router0: 5.0.12.1 /8
+  Router3: 5.0.12.2 /8
+
+Router0 <-> Router1:
+  Router0: 6.0.12.1 /8
+  Router1: 6.0.12.2 /8
+
+Router1 <-> Router2:
+  Router1: 40.0.12.1 /8
+  Router2: 40.0.12.2 /8
+
+Router2 <-> Router5:
+  Router2: 50.0.0.1 /8
+  Router5: 50.0.12.2 /8
+
+Router1 <-> Router3:
+  Router1: 60.0.12.1 /8
+  Router3: 60.0.12.2 /8
+
+Router1 <-> Router4:
+  Router1: 70.0.12.1 /8
+  Router4: 70.0.12.2 /8
+
+Router4 <-> Router6:
+  Router4: 80.0.12.2 /8
+  Router6: 80.0.12.1 /8
+
+Router1 <-> Router6:
+  Router1: 90.0.12.2 /8
+  Router6: 90.0.12.1 /8
+
+Router3 <-> Router4 (corrected WAN network):
+  Router3: 110.0.12.1 /8
+  Router4: 110.0.12.2 /8
+
+============================================================
+2. RIPv1 CONFIGURATION
+============================================================
+
+Router0
+-------
+enable
+configure terminal
+router rip
+ version 1
+ network 5.0.0.0
+ network 6.0.0.0
+ network 10.0.0.0
+end
+copy running-config startup-config
+
+Router1
+-------
+enable
+configure terminal
+router rip
+ version 1
+ network 6.0.0.0
+ network 20.0.0.0
+ network 40.0.0.0
+ network 60.0.0.0
+ network 70.0.0.0
+ network 90.0.0.0
+end
+copy running-config startup-config
+
+Router2
+-------
+enable
+configure terminal
+router rip
+ version 1
+ network 30.0.0.0
+ network 40.0.0.0
+ network 50.0.0.0
+end
+copy running-config startup-config
+
+Router3
+-------
+enable
+configure terminal
+router rip
+ version 1
+ network 5.0.0.0
+ network 60.0.0.0
+ network 100.0.0.0
+ network 110.0.0.0
+end
+copy running-config startup-config
+
+Router4
+-------
+enable
+configure terminal
+router rip
+ version 1
+ network 70.0.0.0
+ network 80.0.0.0
+ network 110.0.0.0
+ network 192.168.1.0
+end
+copy running-config startup-config
+
+Router5
+-------
+enable
+configure terminal
+router rip
+ version 1
+ network 50.0.0.0
+ network 192.168.2.0
+end
+copy running-config startup-config
+
+Router6 (the lower central core router)
+---------------------------------------
+enable
+configure terminal
+router rip
+ version 1
+ network 80.0.0.0
+ network 90.0.0.0
+end
+copy running-config startup-config
+
+============================================================
+3. INTERFACE IP CONFIGURATION
+============================================================
+
+The screenshot does not show the exact interface identifiers for every
+router port. Use show ip interface brief to identify the actual ports,
+then configure each interface with the corresponding IP from the plan.
+
+Example LAN interface:
+interface gigabitEthernet 0/0
+ ip address 10.0.0.1 255.0.0.0
+ no shutdown
+
+Example Class A WAN interface:
+interface serial 0/0/0
+ ip address 5.0.12.1 255.0.0.0
+ no shutdown
+
+Example Class C LAN interface:
+interface gigabitEthernet 0/0
+ ip address 192.168.1.1 255.255.255.0
+ no shutdown
+
+For serial links, configure clock rate on the DCE end only if the
+interface is DCE and Packet Tracer requires it:
+clock rate 64000
+
+============================================================
+4. VERIFICATION COMMANDS
+============================================================
+
+On every router:
+show ip interface brief
+show ip protocols
+show ip route
+show running-config
+
+Check:
+- Interfaces are up/up.
+- RIP is running as version 1.
+- Remote networks appear in the routing table with an R code.
+- PCs have the correct IP address, mask and default gateway.
+
+Connectivity tests:
+From a PC, ping PCs in other LANs.
+From a PC, ping both data-center servers:
+ping 100.0.0.10
+ping 100.0.0.11
+
+============================================================
+5. IMPORTANT RIPv1 NOTES
+============================================================
+
+- RIPv1 is classful and does not send subnet masks in routing updates.
+- RIPv1 does not support VLSM or CIDR.
+- Keep the subnet mask consistent with the classful network plan.
+- Class A networks in this lab use /8.
+- The two 192.168.x.x LANs use the Class C default /24 mask.
+- RIPv1 uses hop count as its metric; 15 is the maximum reachable hop
+  count and 16 means unreachable.
+- The topology has multiple paths, but RIP chooses routes according to
+  hop count. Equal-cost paths may be installed; RIP does not provide
+  traffic engineering or guaranteed fast failover.
+
+============================================================
+6. BEFORE YOU START
+============================================================
+
+1. Correct the Router3–Router4 link to 110.0.12.1 and 110.0.12.2.
+2. Confirm every router has enough Ethernet and serial interfaces.
+3. Install the required serial modules with the router powered off.
+4. Configure all interface IP addresses and masks.
+5. Set PC/server default gateways.
+6. Confirm directly connected interfaces are up/up.
+7. Configure RIPv1 on all seven routers.
+8. Verify routes and test end-to-end pings.
+
+Interface mapping note:
+The suggested interface names in examples are illustrative. Match each
+address to the physical port actually used in your Packet Tracer file.
