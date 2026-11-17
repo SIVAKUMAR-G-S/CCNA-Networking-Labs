@@ -1,0 +1,399 @@
+LARGE-SCALE MULTI-BRANCH NETWORK IMPLEMENTATION USING RIP VERSION 1
+Cisco Packet Tracer – Configuration Reference
+Based on the user's labeled topology screenshot (Router0–Router5)
+
+====================================================================
+1. TOPOLOGY SUMMARY
+====================================================================
+
+Routers:
+  Router0, Router1, Router2, Router3, Router4, Router5
+
+LANs (8 total):
+  Router0: Branch A and Branch B
+  Router3: Branch C
+  Router4: Headquarters (HQ)
+  Router1: Data Center
+  Router2: Branch D and Branch E
+  Router5: Branch F
+
+Routing protocol:
+  RIPv1 (classful distance-vector routing)
+
+WAN links (9):
+  Router0 <-> Router1
+  Router0 <-> Router2? NO – see actual links below
+  Router0 <-> Router3
+  Router0 <-> Router4
+  Router1 <-> Router2
+  Router1 <-> Router4
+  Router2 <-> Router4
+  Router2 <-> Router5
+  Router3 <-> Router4
+  Router4 <-> Router5
+
+There are 9 WAN links in the labeled topology:
+  R0-R1, R0-R3, R0-R4, R1-R2, R1-R4,
+  R2-R4, R2-R5, R3-R4, R4-R5.
+
+====================================================================
+2. IMPORTANT RIPv1 ADDRESSING CORRECTION
+====================================================================
+
+The screenshot originally labels:
+  HQ LAN:         172.16.1.0
+  Data Center LAN:172.16.2.0
+
+With classful Class B addressing, both are part of the same
+172.16.0.0/16 major network. They are on different routers with
+other networks between them. RIPv1 does not carry subnet masks and
+does not support discontiguous subnetting.
+
+To make this RIPv1 lab work reliably, use a different Class B major
+network for the Data Center:
+  Data Center gateway: 172.17.2.1
+  Server0:             172.17.2.10
+  Server1:             172.17.2.11
+  Server2:             172.17.2.12
+  Mask:                255.255.0.0
+
+This is the one intentional addressing change from the screenshot.
+All server host numbers remain the same.
+
+====================================================================
+3. IP ADDRESSING PLAN
+====================================================================
+
+CLASSFUL MASKS USED
+  Class A: 255.0.0.0       (/8)
+  Class B: 255.255.0.0     (/16)
+  Class C: 255.255.255.0   (/24)
+
+---------------------------
+LAN NETWORKS AND END DEVICES
+---------------------------
+
+Branch A – Router0
+  Network: 192.168.1.0/24
+  Router0 LAN gateway: 192.168.1.1
+  PC1: 192.168.1.10 /24, GW 192.168.1.1
+  PC0: 192.168.1.11 /24, GW 192.168.1.1
+  PC2: 192.168.1.12 /24, GW 192.168.1.1
+  PC3: 192.168.1.13 /24, GW 192.168.1.1
+
+Branch B – Router0
+  Network: 192.168.2.0/24
+  Router0 LAN gateway: 192.168.2.1
+  PC5: 192.168.2.10 /24, GW 192.168.2.1
+  PC4: 192.168.2.11 /24, GW 192.168.2.1
+  PC7: 192.168.2.12 /24, GW 192.168.2.1
+  PC6: 192.168.2.13 /24, GW 192.168.2.1
+
+Branch C – Router3
+  Network: 192.168.3.0/24
+  Router3 LAN gateway: 192.168.3.1
+  PC8: 192.168.3.10 /24, GW 192.168.3.1
+  PC9: 192.168.3.11 /24, GW 192.168.3.1
+
+Headquarters – Router4
+  Network: 172.16.0.0/16 (host addresses shown as 172.16.1.x)
+  Router4 LAN gateway: 172.16.1.1
+  PC10: 172.16.1.10 /16, GW 172.16.1.1
+  PC11: 172.16.1.11 /16, GW 172.16.1.1
+  PC12: 172.16.1.12 /16, GW 172.16.1.1
+  PC13: 172.16.1.13 /16, GW 172.16.1.1
+
+Data Center – Router1
+  Network: 172.17.0.0/16 (corrected from 172.16.2.x)
+  Router1 LAN gateway: 172.17.2.1
+  Server0: 172.17.2.10 /16, GW 172.17.2.1
+  Server1: 172.17.2.11 /16, GW 172.17.2.1
+  Server2: 172.17.2.12 /16, GW 172.17.2.1
+
+Branch D – Router2
+  Network: 192.168.4.0/24
+  Router2 LAN gateway: 192.168.4.1
+  PC1(1): 192.168.4.13 /24, GW 192.168.4.1
+  PC0(1): 192.168.4.10 /24, GW 192.168.4.1
+  PC2(1): 192.168.4.12 /24, GW 192.168.4.1
+  PC3(1): 192.168.4.11 /24, GW 192.168.4.1
+
+Branch E – Router2
+  Network: 192.168.5.0/24
+  Router2 LAN gateway: 192.168.5.1
+  PC4(1): 192.168.5.12 /24, GW 192.168.5.1
+  PC5(1): 192.168.5.10 /24, GW 192.168.5.1
+  PC7(1): 192.168.5.13 /24, GW 192.168.5.1
+  PC6(1): 192.168.5.11 /24, GW 192.168.5.1
+
+Branch F – Router5
+  Network: 192.168.6.0/24
+  Router5 LAN gateway: 192.168.6.1
+  PC8(1): 192.168.6.11 /24, GW 192.168.6.1
+  PC9(1): 192.168.6.10 /24, GW 192.168.6.1
+
+---------------------------
+WAN POINT-TO-POINT LINKS
+---------------------------
+
+Use the Class A default mask 255.0.0.0 on each WAN link.
+
+R0 <-> R1:
+  R0: 10.0.12.1 /8
+  R1: 10.0.12.2 /8
+
+R0 <-> R3:
+  R0: 20.0.12.1 /8
+  R3: 20.0.12.2 /8
+
+R0 <-> R4:
+  R0: 30.0.12.1 /8
+  R4: 30.0.12.2 /8
+
+R1 <-> R2:
+  R1: 40.0.12.1 /8
+  R2: 40.0.12.2 /8
+
+R1 <-> R4:
+  R1: 50.0.12.1 /8
+  R4: 50.0.12.2 /8
+
+R2 <-> R5:
+  R2: 60.0.12.1 /8
+  R5: 60.0.12.2 /8
+
+R3 <-> R4:
+  R3: 70.0.12.1 /8
+  R4: 70.0.12.2 /8
+
+R4 <-> R5:
+  R4: 80.0.12.1 /8
+  R5: 80.0.12.2 /8
+
+R2 <-> R4:
+  R4: 90.0.12.1 /8
+  R2: 90.0.12.2 /8
+
+====================================================================
+4. INTERFACE IP CONFIGURATION
+====================================================================
+
+IMPORTANT:
+The screenshot does not show the exact interface names for every
+cable. Identify the ports used in your own Packet Tracer file with:
+
+  show ip interface brief
+
+The interface names below are EXAMPLES. Map each IP address to the
+actual connected port. Use a separate interface for each LAN/WAN link.
+
+EXAMPLE – LAN interface:
+  enable
+  configure terminal
+  interface gigabitEthernet 0/0
+   ip address 192.168.1.1 255.255.255.0
+   no shutdown
+  exit
+
+EXAMPLE – WAN serial interface:
+  interface serial 0/0/0
+   ip address 10.0.12.1 255.0.0.0
+   no shutdown
+  exit
+
+On the DCE end of a serial link only, if Packet Tracer requires clock:
+  clock rate 64000
+
+Do not configure the same IP address on more than one interface.
+
+====================================================================
+5. RIPv1 CONFIGURATION – ALL SIX ROUTERS
+====================================================================
+
+Router0 – Branch A and Branch B
+--------------------------------
+enable
+configure terminal
+router rip
+ version 1
+ network 10.0.0.0
+ network 20.0.0.0
+ network 30.0.0.0
+ network 192.168.1.0
+ network 192.168.2.0
+end
+copy running-config startup-config
+
+Router1 – Data Center
+---------------------
+enable
+configure terminal
+router rip
+ version 1
+ network 10.0.0.0
+ network 40.0.0.0
+ network 50.0.0.0
+ network 172.17.0.0
+end
+copy running-config startup-config
+
+Router2 – Branch D and Branch E
+-------------------------------
+enable
+configure terminal
+router rip
+ version 1
+ network 40.0.0.0
+ network 60.0.0.0
+ network 90.0.0.0
+ network 192.168.4.0
+ network 192.168.5.0
+end
+copy running-config startup-config
+
+Router3 – Branch C
+------------------
+enable
+configure terminal
+router rip
+ version 1
+ network 20.0.0.0
+ network 70.0.0.0
+ network 192.168.3.0
+end
+copy running-config startup-config
+
+Router4 – Headquarters / Core
+-----------------------------
+enable
+configure terminal
+router rip
+ version 1
+ network 30.0.0.0
+ network 50.0.0.0
+ network 70.0.0.0
+ network 80.0.0.0
+ network 90.0.0.0
+ network 172.16.0.0
+end
+copy running-config startup-config
+
+Router5 – Branch F
+------------------
+enable
+configure terminal
+router rip
+ version 1
+ network 60.0.0.0
+ network 80.0.0.0
+ network 192.168.6.0
+end
+copy running-config startup-config
+
+====================================================================
+6. END-DEVICE DEFAULT GATEWAYS
+====================================================================
+
+Set each PC/server with the IP, mask and default gateway listed in
+Section 3.
+
+Examples:
+  PC in Branch A:
+    IP address:      192.168.1.10
+    Subnet mask:     255.255.255.0
+    Default gateway: 192.168.1.1
+
+  PC in HQ:
+    IP address:      172.16.1.10
+    Subnet mask:     255.255.0.0
+    Default gateway: 172.16.1.1
+
+  Server in Data Center (corrected):
+    IP address:      172.17.2.10
+    Subnet mask:     255.255.0.0
+    Default gateway: 172.17.2.1
+
+====================================================================
+7. VERIFICATION COMMANDS
+====================================================================
+
+Run on every router:
+
+  show ip interface brief
+  show ip protocols
+  show ip route
+  show running-config
+
+Expected:
+  - Connected interfaces show up/up.
+  - show ip protocols identifies RIP and version 1.
+  - Remote routes appear with the code R in show ip route.
+  - Each router learns remote LANs and WAN networks through RIP.
+
+From PCs:
+  ping <remote-PC-IP>
+  ping 172.17.2.10
+  ping 172.17.2.11
+  ping 172.17.2.12
+
+Use tracert from a PC to observe the routed path:
+  tracert 192.168.6.10
+
+====================================================================
+8. PRACTICAL TEST SCENARIOS
+====================================================================
+
+1. Ping from Branch A to Branch F.
+2. Ping from Branch C to all three Data Center servers.
+3. Ping from Branch D to an HQ PC.
+4. Run tracert between two remote LANs and observe the router path.
+5. Shut down one WAN interface with:
+     configure terminal
+     interface <WAN-interface>
+     shutdown
+   Wait for RIP to reconverge, then test the destination again.
+6. Restore the interface:
+     no shutdown
+7. Check the routing table again:
+     show ip route
+
+====================================================================
+9. TROUBLESHOOTING CHECKLIST
+====================================================================
+
+- Check IP address and subnet mask on every router interface.
+- Check that every router interface is enabled with no shutdown.
+- Check serial DCE clock rate if required.
+- Check PC/server default gateways.
+- Check that each WAN link has a unique Class A major network.
+- Check RIPv1 is enabled on every router.
+- Check each router has network statements for its directly connected
+  networks.
+- Check for overlapping or duplicated IP subnets.
+- Remember that a successful ping needs both a forward route and a
+  return route.
+
+====================================================================
+10. RIPv1 TECHNICAL NOTES
+====================================================================
+
+- RIPv1 is a classful distance-vector routing protocol.
+- RIPv1 does not include subnet masks in routing updates.
+- RIPv1 does not support VLSM or CIDR.
+- Class A default mask: 255.0.0.0.
+- Class B default mask: 255.255.0.0.
+- Class C default mask: 255.255.255.0.
+- RIP uses hop count as its metric.
+- Maximum usable hop count is 15; 16 means unreachable.
+- RIPv1 sends periodic broadcast routing updates.
+- RIPv1 does not support authentication.
+
+PROJECT TITLE:
+Large-Scale Multi-Branch Network Implementation Using RIP Version 1
+
+TOOLS:
+Cisco Packet Tracer
+
+TECHNOLOGIES:
+IPv4, RIPv1, classful addressing, LAN, WAN, dynamic routing,
+routing-table verification and network troubleshooting.
